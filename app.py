@@ -45,10 +45,6 @@ df = fetch_and_score()
 st.sidebar.metric("Articles analysed", len(df))
 threshold = st.sidebar.slider("Risk threshold", 0.0, 1.0, 0.2)
 
-
-# create a tiny offset so points don’t overlap
-df["plot_date"] = df["date"] + pd.to_timedelta(np.random.uniform(-3, 3, len(df)), unit="h")
-
 # ---------- CHART ----------
 fig = px.scatter(df[df["risk"] >= threshold],
                  x="date", y="risk",
@@ -58,33 +54,6 @@ fig = px.scatter(df[df["risk"] >= threshold],
                  title="Risk over time")
 fig.update_layout(xaxis_title="Date", yaxis_title="Risk Score")
 st.plotly_chart(fig, use_container_width=True)
-
-fig = px.bar(df.sort_values("risk", ascending=False).head(20),
-             x="title", y="risk",
-             hover_data=["date"],
-             title="Top 20 Risk Articles (ranked)")
-fig.update_layout(xaxis_title="", yaxis_title="Risk Score",
-                  xaxis_tickangle=-45)
-
-fig = px.scatter(df.sort_values("risk", ascending=False).head(15),
-                 x="risk", y="title",
-                 color="risk",
-                 color_continuous_scale="Reds",
-                 title="Risk Score vs Article")
-fig.update_layout(yaxis_title="", xaxis_title="Risk Score")
-
-df["day"] = df["date"].dt.date
-daily = df.groupby("day")["risk"].max().reset_index()
-fig = px.line(daily, x="day", y="risk", markers=True,
-              title="Daily Peak Risk Score")
-
-chart_type = st.selectbox("Chart style", ["Scatter (jittered)", "Bar Top-20", "Daily Line"])
-if chart_type == "Scatter (jittered)":
-    fig = px.scatter(df, x="plot_date", y="risk", hover_data=["title"])
-elif chart_type == "Bar Top-20":
-    fig = px.bar(...)
-else:
-    fig = px.line(...)
 
 # ---------- TABLE ----------
 st.subheader("Top risky articles")
