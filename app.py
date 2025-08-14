@@ -43,7 +43,7 @@ df = fetch_and_score()
 
 # ---------- SIDEBAR ----------
 st.sidebar.metric("Articles analysed", len(df))
-threshold = st.sidebar.slider("Risk threshold", 0.0, 1.0, 0.2)
+threshold = st.sidebar.slider("Risk threshold", 0.0, 1.0, 0.1)
 
 # ---------- CHART ----------
 fig = px.scatter(df[df["risk"] >= threshold],
